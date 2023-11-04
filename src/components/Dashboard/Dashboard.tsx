@@ -109,25 +109,26 @@ const Dashboard = () => {
             {selectedStock.tickerName === '' ? (
                 <>
                     <Grid xs={12}>
-                        <Typography> Please search and select a stock to see its details.</Typography>
+                        <Typography textAlign={'center'}> Please search and select a stock to see its details.</Typography>
                     </Grid>
                 </>
             ) : (<>
-                <Grid xs={5}>
+                <Grid xs={12} md={12} lg={4.5}>
                     <StockInfoCard
                         tickerName={selectedStock.tickerName}
                         companyName={selectedStock.companyName}
                         currency={selectedStock.currency}
                     />
                 </Grid>
-                <Grid xs={7}>
+                <Grid xs={12} md={12} lg={7.5}>
                     <StockPriceChart tickerName={selectedStock.tickerName} currency={selectedStock.currency} />
                 </Grid>
                 <Grid xs={12}>
                     <FinancialMetrics tickerName={selectedStock.tickerName} />
                 </Grid>
-            </>)}
-        </Grid>
+            </>)
+            }
+        </Grid >
     )
 }
 export default Dashboard;

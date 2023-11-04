@@ -18,7 +18,7 @@ const FinancialMetrics = ({ tickerName }: { tickerName: string }) => {
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <TabList onChange={handleChange} aria-label="lab API tabs example">
                     <Tab label="Market Sentiment" value="1" />
-                    <Tab label="Revenue Growth" value="2" />
+                    <Tab label="Annual Revenue Change" value="2" />
                 </TabList>
             </Box>
             <TabPanel value="1">

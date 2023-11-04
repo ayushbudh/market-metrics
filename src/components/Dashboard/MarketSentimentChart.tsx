@@ -1,9 +1,11 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Plot from 'react-plotly.js';
+import Box from '@mui/material/Box';
+import ErrorIcon from '@mui/icons-material/Error';
 import { useEffect, useState } from 'react';
 import { getMarketSentiment } from '../../api/stock';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Typography } from '@mui/material';
 
 interface Sentiment {
     ticker: string;
@@ -22,6 +24,7 @@ interface SentimentShare {
 
 const MarketSentimentChart = ({ tickerName }: { tickerName: string }) => {
     const [sentimentScores, setSentimentScores] = useState<SentimentShare>({ 'bearish': 0, 'somewhatBearish': 0, 'neutral': 0, 'somewhatBullish': 0, 'bullish': 0 });
+    const [error, setError] = useState<string>("");
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -32,6 +35,10 @@ const MarketSentimentChart = ({ tickerName }: { tickerName: string }) => {
                 let neutral: number = 0;
                 let somewhatBullish: number = 0;
                 let bullish: number = 0;
+
+                if (res.data['feed'] === undefined) throw new Error("Market sentiment data not found from the API");
+                if (res.data['feed'].length === 0) throw new Error("Market sentiment data unavailable for this ticker");
+
                 res.data['feed'].map((feed: { ticker_sentiment: Array<Sentiment> }) => {
                     const filteredFeed = feed.ticker_sentiment.filter((sentiment: { ticker: string }) => sentiment.ticker === 'AAPL');
                     for (const ffeed of filteredFeed) {
@@ -55,28 +62,35 @@ const MarketSentimentChart = ({ tickerName }: { tickerName: string }) => {
                         }
                     }
                 })
-
                 setSentimentScores({ bearish, somewhatBearish, neutral, somewhatBullish, bullish });
             })
-            .catch((error) => { })
+            .catch((error) => { setError(error.message); })
             .finally(() => { setIsLoading(false); })
     }, [tickerName])
 
     return (
         <Card>
-            <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }} >
-                {isLoading ? <CircularProgress /> : <Plot
-                    data={[
-                        {
-                            values: [sentimentScores.bearish, sentimentScores.somewhatBearish, sentimentScores.neutral, sentimentScores.somewhatBullish, sentimentScores.bullish],
-                            labels: ['Bearish', 'Somewhat-Bearish', 'Neutral', 'Somewhat_Bullish', 'Bullish'],
-                            type: 'pie'
-                        }
-                    ]}
-                    layout={{
-                        title: 'Market Sentiment Share'
-                    }}>
-                </Plot>}
+            <CardContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 450 }} >
+                {isLoading ?
+                    <Box textAlign={'center'}>
+                        <CircularProgress size={30} />
+                        <Typography variant='h6'>Loading</Typography>
+                    </Box> :
+                    error.length != 0 ? <Box textAlign={'center'}>
+                        <ErrorIcon color={'error'} fontSize='large' />
+                        <Typography variant='h6'>Error: {error}</Typography>
+                    </Box> : <Plot
+                        data={[
+                            {
+                                values: [sentimentScores.bearish, sentimentScores.somewhatBearish, sentimentScores.neutral, sentimentScores.somewhatBullish, sentimentScores.bullish],
+                                labels: ['Bearish', 'Somewhat-Bearish', 'Neutral', 'Somewhat_Bullish', 'Bullish'],
+                                type: 'pie'
+                            }
+                        ]}
+                        layout={{
+                            title: 'Market Sentiment Share'
+                        }}>
+                    </Plot>}
             </CardContent>
         </Card>
     );
