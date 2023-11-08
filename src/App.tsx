@@ -1,10 +1,14 @@
 import './App.css';
-import Landing from './components/Landing/Landing';
+import NavBar from './components/NavBar/NavBar';
+import Dashboard from './components/Dashboard/Dashboard';
 
-function App() {
+const App = () => {
   return (
-    <Landing />
-  )
+    <>
+      <NavBar />
+      <Dashboard />
+    </>
+  );
 }
 
 export default App;

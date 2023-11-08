@@ -14,11 +14,8 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import AnalyticsIcon from "@mui/icons-material/Analytics";
+
 interface Props {
-    /**
-     * Injected by the documentation to work in an iframe.
-     * You won't need it on your project.
-     */
     window?: () => Window;
 }
 
@@ -100,7 +97,7 @@ const NavBar = (props: Props) => {
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{
-                        keepMounted: true // Better open performance on mobile.
+                        keepMounted: true
                     }}
                     sx={{
                         display: { xs: "block", sm: "none" },

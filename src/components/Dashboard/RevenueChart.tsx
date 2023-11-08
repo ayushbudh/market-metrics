@@ -1,18 +1,14 @@
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Plot from 'react-plotly.js';
+import 'react-plotly.js'
 import { CircularProgress } from '@mui/material';
 import ErrorIcon from '@mui/icons-material/Error';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useState, useEffect } from "react";
-import { getIncomeStatement } from "../../api/stock";
-
-interface IncomeReport {
-    reportedCurrency: string;
-    totalRevenue: string[];
-    fiscalDateEnding: string[];
-}
+import { getIncomeStatement } from "../../api/api";
+import IncomeReport from '../../types/IncomeReport';
 
 const RevenueChart = ({ tickerName }: { tickerName: string }) => {
     const [companyAnnualReport, setCompanyAnnualReport] = useState<IncomeReport>();
@@ -62,25 +58,19 @@ const RevenueChart = ({ tickerName }: { tickerName: string }) => {
                                 xaxis: {
                                     title: { font: { family: 'Courier New, monospace', size: 18 } },
                                     autorange: true,
-                                    range: ['2015-02-17', '2017-02-16'],
+                                    range: ['2018-12-30', '2023-12-30'],
                                     rangeselector: {
                                         buttons: [
                                             {
                                                 count: 1,
-                                                label: '1m',
-                                                step: 'month',
+                                                label: '1y',
+                                                step: 'year',
                                                 stepmode: 'backward'
                                             },
                                             {
                                                 count: 3,
-                                                label: '3m',
-                                                step: 'month',
-                                                stepmode: 'backward'
-                                            },
-                                            {
-                                                count: 6,
-                                                label: '6m',
-                                                step: 'month',
+                                                label: '3y',
+                                                step: 'year',
                                                 stepmode: 'backward'
                                             },
                                             { step: 'all' }

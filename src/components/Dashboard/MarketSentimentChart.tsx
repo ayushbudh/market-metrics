@@ -4,23 +4,10 @@ import Plot from 'react-plotly.js';
 import Box from '@mui/material/Box';
 import ErrorIcon from '@mui/icons-material/Error';
 import { useEffect, useState } from 'react';
-import { getMarketSentiment } from '../../api/stock';
+import { getMarketSentiment } from '../../api/api';
 import { CircularProgress, Typography } from '@mui/material';
-
-interface Sentiment {
-    ticker: string;
-    relevance_score: string;
-    ticker_sentiment_score: string;
-    ticker_sentiment_label: string;
-}
-
-interface SentimentShare {
-    bearish: number;
-    somewhatBearish: number;
-    neutral: number;
-    somewhatBullish: number;
-    bullish: number;
-}
+import SentimentShare from '../../types/SentimentShare';
+import Sentiment from '../../types/Sentiment';
 
 const MarketSentimentChart = ({ tickerName }: { tickerName: string }) => {
     const [sentimentScores, setSentimentScores] = useState<SentimentShare>({ 'bearish': 0, 'somewhatBearish': 0, 'neutral': 0, 'somewhatBullish': 0, 'bullish': 0 });
@@ -29,20 +16,20 @@ const MarketSentimentChart = ({ tickerName }: { tickerName: string }) => {
 
     useEffect(() => {
         getMarketSentiment(tickerName)
-            .then((res) => {
+            .then((sentiment) => {
                 let bearish: number = 0;
                 let somewhatBearish: number = 0;
                 let neutral: number = 0;
                 let somewhatBullish: number = 0;
                 let bullish: number = 0;
 
-                if (res.data['feed'] === undefined) throw new Error("Market sentiment data not found from the API");
-                if (res.data['feed'].length === 0) throw new Error("Market sentiment data unavailable for this ticker");
+                if (sentiment.data['feed'] === undefined) throw new Error("Market sentiment data not found from the API");
+                if (sentiment.data['feed'].length === 0) throw new Error("Market sentiment data unavailable for this ticker");
 
-                res.data['feed'].map((feed: { ticker_sentiment: Array<Sentiment> }) => {
+                sentiment.data['feed'].map((feed: { ticker_sentiment: Array<Sentiment> }) => {
                     const filteredFeed = feed.ticker_sentiment.filter((sentiment: { ticker: string }) => sentiment.ticker === 'AAPL');
-                    for (const ffeed of filteredFeed) {
-                        switch (ffeed.ticker_sentiment_label) {
+                    for (const feed of filteredFeed) {
+                        switch (feed.ticker_sentiment_label) {
                             case 'Bearish':
                                 bearish += 1
                                 break;

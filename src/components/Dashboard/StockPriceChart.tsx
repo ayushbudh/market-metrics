@@ -6,14 +6,8 @@ import Typography from '@mui/material/Typography';
 import ErrorIcon from '@mui/icons-material/Error';
 import { CircularProgress } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { getStockGraphTimeSeriesData } from '../../api/stock';
-
-
-interface StockTimeSeriesData {
-    openPrice: string[];
-    closePrice: string[];
-    dateTime: string[];
-}
+import { getStockGraphTimeSeriesData } from '../../api/api';
+import StockTimeSeriesData from '../../types/StockTimeSeriesData';
 
 const StockPriceChart = ({ tickerName, currency }: { tickerName: string, currency: string }) => {
     const [stockTimeSeriesData, setStockTimeSeriesData] = useState<StockTimeSeriesData>({ openPrice: [], closePrice: [], dateTime: [] });
@@ -21,7 +15,7 @@ const StockPriceChart = ({ tickerName, currency }: { tickerName: string, currenc
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        getStockGraphTimeSeriesData('IBM')
+        getStockGraphTimeSeriesData(tickerName)
             .then((stockData) => {
                 if (stockData.data['Time Series (5min)'] === undefined) throw new Error("Stock price data not found from the API");
                 if (stockData.data['Time Series (5min)'].length === 0) throw new Error("Stock price data unavailable for this ticker");
@@ -56,13 +50,15 @@ const StockPriceChart = ({ tickerName, currency }: { tickerName: string, currenc
                         <Plot
                             data={[
                                 {
-                                    x: stockTimeSeriesData.dateTime, y: stockTimeSeriesData.openPrice,
+                                    x: stockTimeSeriesData.dateTime,
+                                    y: stockTimeSeriesData.openPrice,
                                     type: 'scatter',
                                     mode: 'lines+markers',
                                     name: 'Open'
                                 },
                                 {
-                                    x: stockTimeSeriesData.dateTime, y: stockTimeSeriesData.closePrice,
+                                    x: stockTimeSeriesData.dateTime,
+                                    y: stockTimeSeriesData.closePrice,
                                     type: 'scatter',
                                     mode: 'lines+markers',
                                     name: 'Close'

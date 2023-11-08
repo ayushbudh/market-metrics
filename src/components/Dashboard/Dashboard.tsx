@@ -8,14 +8,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import Typography from '@mui/material/Typography';
 import StockInfoCard from './StockInfoCard';
 import StockPriceChart from './StockPriceChart';
+import { getStockSearchResults } from "../../api/api";
 import FinancialMetrics from "./FinancialMetrics";
-import { getStockSearchResults } from "../../api/stock";
-
-interface SearchResult {
-    tickerName: string;
-    companyName: string;
-    currency: string;
-}
+import SearchResult from "../../types/SearchResult";
 
 const Dashboard = () => {
     const [open, setOpen] = useState(false);
@@ -32,13 +27,15 @@ const Dashboard = () => {
         }
         getStockSearchResults(query)
             .then((res) => {
-                setOptions(res.data.bestMatches.map((e: any) => {
-                    return {
-                        tickerName: e["1. symbol"],
-                        companyName: e["2. name"],
-                        currency: e["8. currency"]
-                    }
-                }));
+                if (res.data && res.data['bestMatches']) {
+                    setOptions(res.data.bestMatches.map((e: any) => {
+                        return {
+                            tickerName: e["1. symbol"],
+                            companyName: e["2. name"],
+                            currency: e["8. currency"]
+                        }
+                    }));
+                }
             })
             .catch((error) => { })
             .finally(() => { setSearchResultsLoading(false); })
