@@ -8,15 +8,17 @@ import axiosInstance from '../../api/axios-instance';
 
 const renderComponent = () => render(<StockInfoCard tickerName="IBM" companyName="International Business Machines" currency="USD" />);
 
-describe('StockInfoCard test suite', () => {
+describe('StockInfoCard component test suite', () => {
     beforeAll(() => {
         mock.reset();
     });
+
     afterEach(() => {
         cleanup();
         mock.reset();
-    })
-    test('should render StockInfoCard component with the correct data', async () => {
+    });
+
+    test('should render component with the correct data', async () => {
         mock.onGet("/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo").reply(200, stockQuote);
         mock.onGet("/query?function=OVERVIEW&symbol=IBM&apikey=demo").reply(200, companyOverview);
 

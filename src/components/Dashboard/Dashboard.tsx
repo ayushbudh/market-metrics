@@ -17,6 +17,7 @@ const Dashboard = () => {
     const [options, setOptions] = useState<readonly SearchResult[]>([]);
     const [selectedStock, setSelectedStock] = useState<SearchResult>({ companyName: '', tickerName: '', currency: '' });
     const [searchResultsLoading, setSearchResultsLoading] = useState<boolean>(false);
+    const [isError, setIsError] = useState<boolean>(false);
 
     const setSearchResults = (query: string) => {
         setSearchResultsLoading(true);
@@ -28,24 +29,27 @@ const Dashboard = () => {
         getStockSearchResults(query)
             .then((res) => {
                 if (res.data && res.data['bestMatches']) {
-                    setOptions(res.data.bestMatches.map((e: any) => {
-                        return {
-                            tickerName: e["1. symbol"],
-                            companyName: e["2. name"],
-                            currency: e["8. currency"]
-                        }
-                    }));
+                    setOptions(res.data.bestMatches.map((e: any) => ({
+                        tickerName: e["1. symbol"],
+                        companyName: e["2. name"],
+                        currency: e["8. currency"]
+                    })));
                 }
+                throw new Error("Stock search results not found from the API");
             })
-            .catch((error) => { })
-            .finally(() => { setSearchResultsLoading(false); })
+            .catch((_) => {
+                setIsError(true);
+            })
+            .finally(() => {
+                setSearchResultsLoading(false);
+            })
     }
 
     return (
         <Grid container spacing={2} mt={8} ml={6} mr={6}>
             <Grid xs={12}>
                 <Autocomplete
-                    noOptionsText="No stocks"
+                    noOptionsText={isError ? "Something went wrong. Please try again later." : "No stocks"}
                     onChange={(_, value: SearchResult | null) => {
                         value ? setSelectedStock(value) : setSelectedStock({ tickerName: '', companyName: '', currency: '' })
                     }}
@@ -72,7 +76,8 @@ const Dashboard = () => {
                                         </Typography>
                                     </Grid>
                                 </Grid>
-                            </li>)
+                            </li>
+                        );
                     }}
                     isOptionEqualToValue={(option, value) => {
                         return option.companyName === value.companyName || option.tickerName === value.tickerName
@@ -104,28 +109,30 @@ const Dashboard = () => {
                 />
             </Grid>
             {selectedStock.tickerName === '' ? (
+                <Grid xs={12}>
+                    <Typography textAlign={'center'}> Please search and select a stock to see its details.</Typography>
+                </Grid>
+            ) : (
                 <>
+                    <Grid xs={12} md={12} lg={4.5}>
+                        <StockInfoCard
+                            tickerName={selectedStock.tickerName}
+                            companyName={selectedStock.companyName}
+                            currency={selectedStock.currency}
+                        />
+                    </Grid>
+                    <Grid xs={12} md={12} lg={7.5}>
+                        <StockPriceChart
+                            tickerName={selectedStock.tickerName}
+                            currency={selectedStock.currency} />
+                    </Grid>
                     <Grid xs={12}>
-                        <Typography textAlign={'center'}> Please search and select a stock to see its details.</Typography>
+                        <FinancialMetrics
+                            tickerName={selectedStock.tickerName} />
                     </Grid>
                 </>
-            ) : (<>
-                <Grid xs={12} md={12} lg={4.5}>
-                    <StockInfoCard
-                        tickerName={selectedStock.tickerName}
-                        companyName={selectedStock.companyName}
-                        currency={selectedStock.currency}
-                    />
-                </Grid>
-                <Grid xs={12} md={12} lg={7.5}>
-                    <StockPriceChart tickerName={selectedStock.tickerName} currency={selectedStock.currency} />
-                </Grid>
-                <Grid xs={12}>
-                    <FinancialMetrics tickerName={selectedStock.tickerName} />
-                </Grid>
-            </>)
-            }
-        </Grid >
-    )
+            )}
+        </Grid>
+    );
 }
 export default Dashboard;

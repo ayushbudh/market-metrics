@@ -4,19 +4,21 @@ import StockPriceChart from './StockPriceChart';
 import axiosInstance from '../../api/axios-instance';
 import mock from '../../api/mock-adapter';
 import { timeSeriesData } from '../../test/test_data/time_series_data';
+import StockTimeSeriesData from '../../types/StockTimeSeriesData';
 
 const renderComponent = () => render(<StockPriceChart tickerName="IBM" currency="USD" />);
 
-describe('StockPriceChart test suite', () => {
-
+describe('StockPriceChart component test suite', () => {
     beforeAll(() => {
         mock.reset();
     });
 
-    afterEach(cleanup);
+    afterEach(() => {
+        cleanup();
+        mock.reset();
+    });
 
-    test('should render StockPriceChart component with the correct data', async () => {
-
+    test('should render component with the correct data', async () => {
         mock.onGet("/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo").reply(200, timeSeriesData);
 
         const { queryByText } = renderComponent();
@@ -31,30 +33,30 @@ describe('StockPriceChart test suite', () => {
             const actualYValuesForLegend2: string[] = plotElement['_fullData'][1]['_input']['y'];
             const stockData = await axiosInstance.get("/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo");
             const timeSeriesData = stockData.data["Time Series (5min)"];
-            const openPrice: string[] = [];
-            const closePrice: string[] = [];
-            const dateTime: string[] = [];
+            const stockTimeSeriesData: StockTimeSeriesData = {
+                openPrice: [],
+                closePrice: [],
+                dateTime: []
+            };
             for (const dt in timeSeriesData) {
-                openPrice.push(timeSeriesData[dt]["1. open"]);
-                closePrice.push(timeSeriesData[dt]["4. close"]);
-                dateTime.push(dt);
+                stockTimeSeriesData.openPrice.push(timeSeriesData[dt]["1. open"]);
+                stockTimeSeriesData.closePrice.push(timeSeriesData[dt]["4. close"]);
+                stockTimeSeriesData.dateTime.push(dt);
             }
-            expect(actualYValuesForLegend1).toStrictEqual(openPrice);
-            expect(actualYValuesForLegend2).toStrictEqual(closePrice);
-            expect(actualXValuesForLegend1).toStrictEqual(dateTime);
-            expect(actualXValuesForLegend2).toStrictEqual(dateTime);
+            expect(actualYValuesForLegend1).toStrictEqual(stockTimeSeriesData.openPrice);
+            expect(actualYValuesForLegend2).toStrictEqual(stockTimeSeriesData.closePrice);
+            expect(actualXValuesForLegend1).toStrictEqual(stockTimeSeriesData.dateTime);
+            expect(actualXValuesForLegend2).toStrictEqual(stockTimeSeriesData.dateTime);
             expect(plotElement).toBeInTheDocument();
         });
         expect(queryByText(/Loading/i)).not.toBeInTheDocument();
         expect(queryByText(/Error:/i)).not.toBeInTheDocument();
-    })
+    });
 
-    test("should render loading followed by error message", async () => {
-
+    test("should render loading followed by error message for getStockGraphTimeSeriesData API call", async () => {
         mock.onGet("/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=demo").networkError();
 
         const { queryByText } = renderComponent();
-
         expect(queryByText(/Loading/i)).toBeInTheDocument();
         expect(queryByText(/Error:/i)).not.toBeInTheDocument();
 
@@ -65,5 +67,4 @@ describe('StockPriceChart test suite', () => {
         expect(queryByText(/Loading/i)).not.toBeInTheDocument();
         expect(queryByText(/Error:/i)).toBeInTheDocument();
     });
-
 });

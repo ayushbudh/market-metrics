@@ -7,16 +7,17 @@ import { incomeStatement } from '../../test/test_data/income_statement';
 
 const renderComponent = () => render(<RevenueChart tickerName="AAPL" />);
 
-describe('RevenueChart test suite', () => {
-
+describe('RevenueChart component test suite', () => {
     beforeAll(() => {
         mock.reset();
     });
 
-    afterEach(cleanup);
+    afterEach(() => {
+        cleanup();
+        mock.reset();
+    });
 
-    test('should render RevenueChart component with the correct data', async () => {
-
+    test('should render component with the correct data', async () => {
         mock.onGet("/query?function=INCOME_STATEMENT&symbol=IBM&apikey=demo").reply(200, incomeStatement);
 
         const { queryByText } = renderComponent();
@@ -46,14 +47,12 @@ describe('RevenueChart test suite', () => {
 
         expect(queryByText(/Loading/i)).not.toBeInTheDocument();
         expect(queryByText(/Error:/i)).not.toBeInTheDocument();
-    })
+    });
 
-    test("should render loading followed by error message", async () => {
-
+    test("should render loading followed by error message for getIncomeStatement API call", async () => {
         mock.onGet("/query?function=INCOME_STATEMENT&symbol=IBM&apikey=demo").networkError();
 
         const { queryByText } = renderComponent();
-
         expect(queryByText(/Loading/i)).toBeInTheDocument();
         expect(queryByText(/Error:/i)).not.toBeInTheDocument();
 
@@ -64,5 +63,4 @@ describe('RevenueChart test suite', () => {
         expect(queryByText(/Loading/i)).not.toBeInTheDocument();
         expect(queryByText(/Error:/i)).toBeInTheDocument();
     });
-
 });
