@@ -1,6 +1,6 @@
 import { render, waitFor, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom'
-import StockInfoCard from '../StockInfoCard/StockInfoCard';
+import StockInfoCard from './StockInfoCard';
 import mock from '../../api/mock-adapter';
 import { companyOverview } from '../../test/test_data/company_overview';
 import { stockQuote } from '../../test/test_data/stock_quote';

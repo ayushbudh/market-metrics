@@ -1,6 +1,6 @@
 import { render, waitFor, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom'
-import RevenueChart from '../RevenueChart/RevenueChart';
+import RevenueChart from './RevenueChart';
 import axiosInstance from '../../api/axios-instance';
 import mock from '../../api/mock-adapter';
 import { incomeStatement } from '../../test/test_data/income_statement';

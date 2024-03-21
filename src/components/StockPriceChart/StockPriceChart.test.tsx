@@ -1,6 +1,6 @@
 import { render, waitFor, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import StockPriceChart from '../StockPriceChart/StockPriceChart';
+import StockPriceChart from './StockPriceChart';
 import axiosInstance from '../../api/axios-instance';
 import mock from '../../api/mock-adapter';
 import { timeSeriesData } from '../../test/test_data/time_series_data';
