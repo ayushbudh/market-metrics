@@ -4,8 +4,8 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import Box from '@mui/material/Box';
-import MarketSentimentChart from './MarketSentimentChart';
-import RevenueChart from './RevenueChart';
+import MarketSentimentChart from './MarketSentimentChart/MarketSentimentChart';
+import RevenueChart from './RevenueChart/RevenueChart';
 
 const FinancialMetrics = ({ tickerName }: { tickerName: string }) => {
     const [value, setValue] = useState('1');

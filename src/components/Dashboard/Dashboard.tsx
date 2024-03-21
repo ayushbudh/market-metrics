@@ -6,10 +6,10 @@ import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import Typography from '@mui/material/Typography';
-import StockInfoCard from './StockInfoCard';
-import StockPriceChart from './StockPriceChart';
+import StockInfoCard from '../StockInfoCard/StockInfoCard';
+import StockPriceChart from '../StockPriceChart/StockPriceChart';
 import { getStockSearchResults } from "../../api/api";
-import FinancialMetrics from "./FinancialMetrics";
+import FinancialMetrics from "../FinancialMetrics";
 import SearchResult from "../../types/SearchResult";
 
 const Dashboard = () => {
@@ -49,9 +49,14 @@ const Dashboard = () => {
         <Grid container spacing={2} mt={8} ml={6} mr={6}>
             <Grid xs={12}>
                 <Autocomplete
-                    noOptionsText={isError ? "Something went wrong. Please try again later." : "No stocks"}
+                    noOptionsText={isError ? "Something went wrong. Please try again later." : "No stocks found. Please fix your search query!"}
                     onChange={(_, value: SearchResult | null) => {
-                        value ? setSelectedStock(value) : setSelectedStock({ tickerName: '', companyName: '', currency: '' })
+                        if (value) {
+                            setSelectedStock(value);
+                        } else {
+                            setIsError(false);
+                            setSelectedStock({ tickerName: '', companyName: '', currency: '' });
+                        }
                     }}
                     onInputChange={(_, query) => {
                         setSearchResults(query);
@@ -102,6 +107,9 @@ const Dashboard = () => {
                                         {params.InputProps.endAdornment}
                                     </Fragment>
                                 ),
+                                style: {
+                                    color: "black"
+                                }
                             }}
                             variant="standard"
                         />

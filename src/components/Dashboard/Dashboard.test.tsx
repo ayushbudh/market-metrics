@@ -22,7 +22,7 @@ describe('Dashboard component test suite', () => {
 
         const { queryByText, getByLabelText } = renderComponent();
         fireEvent.change(getByLabelText(/Search stock tickers, company names .../i), { target: { value: 'BA' } })
-        expect(queryByText(/No stocks/i)).toBeInTheDocument();
+        expect(queryByText(/No stocks found. Please fix your search query!/i)).toBeInTheDocument();
 
         await waitFor(async () => {
             const searchResults = await axiosInstance.get('/query?function=SYMBOL_SEARCH&keywords=BA&apikey=demo');
@@ -34,7 +34,7 @@ describe('Dashboard component test suite', () => {
             }
         });
 
-        expect(queryByText(/No stocks/i)).not.toBeInTheDocument();
+        expect(queryByText(/No stocks found. Please fix your search query!/i)).not.toBeInTheDocument();
     });
 
     test("should render component followed by error message for getStockSearchResults API call", async () => {
@@ -45,7 +45,7 @@ describe('Dashboard component test suite', () => {
         expect(queryByText(/Something went wrong. Please try again later./i)).not.toBeInTheDocument();
 
         await waitFor(() => {
-            expect(queryByText(/No stocks/i)).toBeInTheDocument();
+            expect(queryByText(/No stocks found. Please fix your search query!/i)).toBeInTheDocument();
         });
 
         expect(queryByText(/Something went wrong. Please try again later./i)).toBeInTheDocument();
